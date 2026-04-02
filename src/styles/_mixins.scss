@@ -1,0 +1,14 @@
+@mixin add-button($width: 60%, $bg: #f4c542) {
+  width: $width;
+  background: $bg;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: black;
+  transition: 0.2s;
+
+  &:hover {
+    background: darken($bg, 10%);
+  }
+}

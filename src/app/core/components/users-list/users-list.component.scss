@@ -1,3 +1,5 @@
+@use "styles/mixins" as *;
+
 .users-sidebar {
   border-right: 1px solid #ddd;
   padding: 16px;
@@ -18,13 +20,24 @@
 
 .user::before {
   content: "";
-  width: 10px;
-  height: 10px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
+}
+
+.user.online::before {
   background: #4caf50;
+}
+
+.user.offline::before {
+  background: #f44336;
 }
 
 .users-header h3 {
   font-size: 14px;
   font-weight: 700;
+}
+
+.add-btn {
+  @include add-button;
 }

@@ -1,13 +1,14 @@
 <aside class="users-sidebar">
   <div class="users-header">
     <h3>USERS</h3>
-    <button class="add-btn">+</button>
   </div>
 
   <div class="users-list">
     @for (user of chat.activeChannelUsers(); track user.id) {
-      <span class="user">{{ user.username }}</span>
-      <span class="user">{{ user.is_online }}</span>
+      <div class="user" [class.online]="user.is_online" [class.offline]="!user.is_online">
+        <span class="user-name">{{ user.username }}</span>
+      </div>
     }
+    <button class="add-btn">+ Add user</button>
   </div>
 </aside>

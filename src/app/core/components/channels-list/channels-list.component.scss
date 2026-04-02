@@ -1,3 +1,5 @@
+@use 'styles/mixins' as *;
+
 .channels-sidebar {
   border-right: 1px solid #ddd;
   padding: 16px;
@@ -20,11 +22,7 @@
 }
 
 .add-btn {
-  background: #f4c542;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
+  @include add-button;
 }
 
 .channels-list {
@@ -45,6 +43,7 @@
   background: #f1f1f1;
   cursor: pointer;
   transition: 0.2s;
+  color: black;
 }
 
 .channel-item:hover {
