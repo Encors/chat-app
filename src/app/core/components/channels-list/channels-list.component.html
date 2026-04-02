@@ -1,0 +1,16 @@
+<aside class="channels-sidebar">
+  <section>
+    <div class="section-header">
+      <h3>CHANNELS</h3>
+      <button class="add-btn">+</button>
+    </div>
+
+    <div class="channels-list">
+      @for (channel of chat.userChannels(); track channel.id) {
+        <button class="channel-item" (click)="selectChannel(channel.id)">
+          <span>#{{ channel.name }}</span>
+        </button>
+      }
+    </div>
+  </section>
+</aside>

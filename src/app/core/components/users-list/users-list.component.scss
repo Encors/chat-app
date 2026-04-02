@@ -1,0 +1,30 @@
+.users-sidebar {
+  border-right: 1px solid #ddd;
+  padding: 16px;
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.user::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4caf50;
+}
+
+.users-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+}

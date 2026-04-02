@@ -1,0 +1,23 @@
+<div class="user-page">
+  <section class="user-container">
+    <div class="user-header">
+      <button routerLink="/" class="back-btn">← Back to Chat</button>
+      <button (click)="logout()" class="logout-btn">Logout</button>
+    </div>
+
+    <div class="user-profile">
+      <h1>{{ authService.user()?.username }}</h1>
+
+      <div class="user-details">
+        <div class="detail-item">
+          <span class="label">User ID:</span>
+          <span class="value">{{ authService.user()?.id }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Status:</span>
+          <span class="value status online">{{ authService.user()?.is_online }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

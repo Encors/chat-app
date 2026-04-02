@@ -1,0 +1,25 @@
+<main class="chat-area">
+  <aside class="sidebar">
+    <app-header [currentUserId]="chatService.currentUserId()" />
+    <app-channels-list />
+
+    @if (chatService.activeChannel()) {
+      <app-users-list />
+    }
+  </aside>
+
+  @if (chatService.activeChannel(); as channel) {
+    <section class="chat-content">
+      <div class="chat-header">
+        <h2>#{{ channel.name }}</h2>
+      </div>
+
+      <app-messages-list />
+      <app-message-input />
+    </section>
+  } @else {
+    <section class="no-channel-selected">
+      <h3>Select a channel to start chatting</h3>
+    </section>
+  }
+</main>
