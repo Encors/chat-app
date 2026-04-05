@@ -1,7 +1,8 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { Message, MessageView } from '@app/core/models/message';
 import { SafeUser, UUID } from '@app/core/models/user';
 import { ApiService } from '@app/shared/services/api.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class MessageService {
@@ -9,7 +10,7 @@ export class MessageService {
 
   readonly messages = signal<Map<UUID, Message[]>>(new Map());
   readonly loading = signal(false);
-
+  protected destroyRef = inject(DestroyRef);
   getMessages(channelId: string): Message[] {
     return this.messages().get(channelId) || [];
   }
@@ -26,17 +27,20 @@ export class MessageService {
 
   loadMessages(channelId: UUID) {
     this.loading.set(true);
-    this.apiService.getMessages(channelId).subscribe({
-      next: messages => {
-        this.messages.update(map => {
-          const newMap = new Map(map);
-          newMap.set(channelId, messages);
-          return newMap;
-        });
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.apiService
+      .getMessages(channelId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: messages => {
+          this.messages.update(map => {
+            const newMap = new Map(map);
+            newMap.set(channelId, messages);
+            return newMap;
+          });
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 
   sendMessage(content: string, channelId: UUID, userId: UUID) {
@@ -46,6 +50,7 @@ export class MessageService {
         channel_id: channelId,
         content,
       })
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(newMessage => {
         this.messages.update(map => {
           const newMap = new Map(map);

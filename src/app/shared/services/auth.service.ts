@@ -1,15 +1,16 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { SafeUser } from '@app/core/models/user';
 import { ApiService } from '@app/shared/services/api.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiService = inject(ApiService);
   private router = inject(Router);
-
+  protected destroyRef = inject(DestroyRef);
   readonly user = signal<SafeUser | null>(null);
   readonly token = signal<string | null>(null);
   readonly loading = signal(false);
@@ -50,6 +51,7 @@ export class AuthService {
           this.loading.set(false);
           return of(null);
         }),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
   }

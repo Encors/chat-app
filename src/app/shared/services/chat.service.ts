@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable } from '@angular/core';
 import { ChannelService } from '@app/shared/services/channel.service';
 import { MessageService } from '@app/shared/services/message.service';
 import { UserChannelService } from '@app/shared/services/user-channel.service';
@@ -8,6 +8,7 @@ import { MessageView } from '@app/core/models/message';
 import { Channel } from '@app/core/models/channel';
 import { SafeUser } from '@app/core/models/user';
 import { forkJoin, switchMap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
@@ -51,13 +52,15 @@ export class ChatService {
   readonly activeChannelId = this.channelService.activeChannelId;
   readonly activeChannel = this.channelService.activeChannel;
   readonly loadingMessages = this.messageService.loading;
-
+  protected destroyRef = inject(DestroyRef);
   init(): void {
     forkJoin({
       channels: this.channelService.loadChannels(),
       users: this.userService.loadUsers(),
       userChannels: this.userChannelService.loadUserChannels(),
-    }).subscribe();
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   selectChannel(channelId: string) {
@@ -95,11 +98,12 @@ export class ChatService {
             relations: this.userChannelService.loadUserChannels(),
           }),
         ),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
   }
 
   addUserToChannel(userId: string, channelId: string) {
-    this.userChannelService.addUserToChannel$(userId, channelId).subscribe();
+    this.userChannelService.addUserToChannel$(userId, channelId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 }
