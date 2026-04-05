@@ -39,6 +39,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "baseHref": "/chat-app/",
             "stylePreprocessorOptions": {
               "includePaths": ["src"]
             },

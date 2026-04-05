@@ -6,7 +6,7 @@ SPA-приложение для обмена текстовыми сообщен
 
 ## Демо
 
-🔗 https://encors.github.io/chat/
+🔗 https://encors.github.io/chat-app/
 
 ---
 

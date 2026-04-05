@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "deploy": "ng build --base-href=/chat/ && npx gh-pages -d target/app"
+    "deploy": "ng build && npx gh-pages -d target/app"
   },
   "private": true,
   "packageManager": "npm@10.9.3",
