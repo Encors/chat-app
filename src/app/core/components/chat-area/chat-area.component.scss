@@ -1,35 +1,20 @@
+.chat-area {
+  display: grid;
+  grid-template-columns: clamp(260px, 20vw, 320px) 1fr;
+  height: 100vh;
+}
+
+.sidebar,
 .chat-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  min-width: 0;
+  min-height: 0;
 }
 
 .chat-header {
   padding: 16px;
-  border-bottom: 1px solid #ddd;
 }
 
 .chat-header h2 {
   margin: 0;
   font-size: 18px;
-}
-
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  border-right: 1px solid #ddd;
-}
-
-.no-channel-selected {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-app-messages-list {
-  flex: 1;
-  min-height: 0;
-  display: block;
 }

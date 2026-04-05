@@ -1,29 +1,30 @@
-<div class="messages-container" #messagesContainer>
-  @if (chat.loadingMessages()) {
-    <div>
-      <p>Loading messages...</p>
+<div class="messages-container d-flex flex-column h-100">
+  @if (chatService.loadingMessages()) {
+    <div class="d-flex justify-content-center align-items-center h-100">
+      <p class="text-muted m-0">Loading messages...</p>
     </div>
   } @else {
-    <div class="messages">
-      @for (message of chat.messagesView(); track message.id) {
-        <div>
-          <div class="message" [class.own]="message.isOwn">
-            <div class="message-content-wrapper">
-              @if (!message.isOwn) {
-                <span class="message-author">
-                  {{ message.user?.username }}
-                </span>
-              }
-              <div class="message-bubble">
-                <p class="message-text">{{ message.content }}</p>
-              </div>
+    <div class="messages d-flex flex-column gap-2">
+      @for (message of chatService.messagesView(); track message.id) {
+        <div [class.justify-content-end]="message.isOwn" class="message d-flex">
+          <div class="message-content-wrapper">
+            @if (!message.isOwn) {
+              <span class="message-author text-muted small d-block mb-1">
+                {{ message.user?.username }}
+              </span>
+            }
+
+            <div class="message-bubble">
+              <p class="message-text m-0">
+                {{ message.content }}
+              </p>
             </div>
           </div>
         </div>
       } @empty {
-        <div>
-          <h4>No messages yet</h4>
-          <p>Be the first to send a message!</p>
+        <div class="d-flex flex-column justify-content-center align-items-center text-center h-100">
+          <h5 class="mb-1">No messages yet</h5>
+          <p class="text-muted m-0">Be the first to send a message!</p>
         </div>
       }
     </div>

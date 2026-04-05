@@ -26,6 +26,11 @@ export class ApiService {
   }
 
   createChannel(data: Omit<Channel, 'id'>): Observable<Channel> {
+    const exists = MOCK_CHANNELS.some(c => c.name === data.name);
+    if (exists) {
+      return throwError(() => new Error('Channel already exists'));
+    }
+
     const newChannel: Channel = {
       id: crypto.randomUUID() as UUID,
       name: data.name,
@@ -64,7 +69,6 @@ export class ApiService {
   }
 
   addUserToChannel(data: UserChannel): Observable<UserChannel> {
-    // Проверяем, не существует ли уже такая связь
     const exists = MOCK_USER_CHANNELS.some(uc => uc.user_id === data.user_id && uc.channel_id === data.channel_id);
 
     if (exists) {

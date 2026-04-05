@@ -7,6 +7,7 @@ import { AuthService } from '@app/shared/services/auth.service';
 import { MessageView } from '@app/core/models/message';
 import { Channel } from '@app/core/models/channel';
 import { SafeUser } from '@app/core/models/user';
+import { forkJoin, switchMap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
@@ -14,13 +15,19 @@ export class ChatService {
   private readonly messageService = inject(MessageService);
   private readonly userChannelService = inject(UserChannelService);
   private readonly userService = inject(UserService);
-  private auth = inject(AuthService);
-  readonly currentUserId = computed(() => this.auth.user()?.id || '');
+  private readonly auth = inject(AuthService);
 
+  readonly currentUserId = computed(() => this.auth.user()?.id || '');
   readonly userChannels = computed((): Channel[] => {
     const allChannels = this.channelService.channels();
+    const relations = this.userChannelService.userChannels();
     const userId = this.currentUserId();
-    return this.userChannelService.getUserChannels(allChannels, userId);
+
+    if (!userId) return [];
+
+    const ids = new Set(relations.filter(uc => uc.user_id === userId).map(uc => uc.channel_id));
+
+    return allChannels.filter(c => ids.has(c.id));
   });
 
   readonly messagesView = computed((): MessageView[] => {
@@ -32,7 +39,6 @@ export class ChatService {
 
     return this.messageService.getMessagesView(channelId, usersMap, userId);
   });
-
   readonly activeChannelUsers = computed((): SafeUser[] => {
     const channelId = this.channelService.activeChannelId();
     const usersMap = this.userService.users();
@@ -41,29 +47,17 @@ export class ChatService {
 
     return this.userChannelService.getChannelUsers(channelId, usersMap);
   });
-
-  init(): void {
-    this.loadChannels();
-    this.loadUsers();
-    this.loadUserChannels();
-  }
-
-  readonly channels = this.channelService.channels;
+  readonly allUsers = this.userService.users;
   readonly activeChannelId = this.channelService.activeChannelId;
   readonly activeChannel = this.channelService.activeChannel;
   readonly loadingMessages = this.messageService.loading;
-  readonly loadingChannels = this.channelService.loading;
 
-  loadChannels() {
-    this.channelService.loadChannels();
-  }
-
-  loadUsers() {
-    this.userService.loadUsers();
-  }
-
-  loadUserChannels() {
-    this.userChannelService.loadUserChannels();
+  init(): void {
+    forkJoin({
+      channels: this.channelService.loadChannels(),
+      users: this.userService.loadUsers(),
+      userChannels: this.userChannelService.loadUserChannels(),
+    }).subscribe();
   }
 
   selectChannel(channelId: string) {
@@ -85,5 +79,27 @@ export class ChatService {
     if (channelId && userId && content.trim()) {
       this.messageService.sendMessage(content, channelId, userId);
     }
+  }
+
+  createChannel(name: string) {
+    const userId = this.currentUserId();
+    if (!userId) return;
+
+    this.channelService
+      .createChannel(name)
+      .pipe(
+        switchMap(channel => this.userChannelService.addUserToChannel$(userId, channel.id)),
+        switchMap(() =>
+          forkJoin({
+            channels: this.channelService.loadChannels(),
+            relations: this.userChannelService.loadUserChannels(),
+          }),
+        ),
+      )
+      .subscribe();
+  }
+
+  addUserToChannel(userId: string, channelId: string) {
+    this.userChannelService.addUserToChannel$(userId, channelId).subscribe();
   }
 }

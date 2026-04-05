@@ -1,6 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { SafeUser, UUID } from '@app/core/models/user';
 import { ApiService } from '@app/shared/services/api.service';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -8,15 +10,12 @@ export class UserService {
 
   readonly users = signal<Map<UUID, SafeUser>>(new Map());
 
-  getUser(id: UUID): SafeUser | undefined {
-    return this.users().get(id);
-  }
-
-  loadUsers() {
-    this.apiService.getUsers().subscribe(users => {
-      const map = new Map(users.map(u => [u.id, u]));
-      this.users.set(map);
-    });
+  loadUsers(): Observable<SafeUser[]> {
+    return this.apiService.getUsers().pipe(
+      tap(users => {
+        this.users.set(new Map(users.map(u => [u.id, u])));
+      }),
+    );
   }
 
   getCurrentUser(currentUserId: UUID): SafeUser | undefined {

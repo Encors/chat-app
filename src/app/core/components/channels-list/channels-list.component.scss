@@ -1,55 +1,21 @@
 @use 'styles/mixins' as *;
 
-.channels-sidebar {
-  border-right: 1px solid #ddd;
-  padding: 16px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
+.channel-item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #e1e1e1;
+  border: none;
+  color: black;
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
+  &:hover {
+    background: #e5e5e5;
+  }
 
-.section-header h3 {
-  font-size: 14px;
-  font-weight: 700;
+  &.active {
+    background: #ddd;
+  }
 }
 
 .add-btn {
   @include add-button;
-}
-
-.channels-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow-y: auto;
-  min-height: 0;
-}
-
-.channel-item {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  background: #f1f1f1;
-  cursor: pointer;
-  transition: 0.2s;
-  color: black;
-}
-
-.channel-item:hover {
-  background: #e5e5e5;
-}
-
-.channel-item.active {
-  background: #ddd;
 }

@@ -1,14 +1,37 @@
-<aside class="users-sidebar">
-  <div class="users-header">
-    <h3>USERS</h3>
+<aside class="p-3 h-100 d-flex flex-column">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="m-0">USERS</h5>
   </div>
 
-  <div class="users-list">
+  <div class="d-flex flex-column gap-2 overflow-auto">
     @for (user of chat.activeChannelUsers(); track user.id) {
-      <div class="user" [class.online]="user.is_online" [class.offline]="!user.is_online">
-        <span class="user-name">{{ user.username }}</span>
+      <div [class.offline]="!user.is_online" [class.online]="user.is_online" class="user d-flex align-items-center">
+        <span class="text-truncate">{{ user.username }}</span>
       </div>
     }
-    <button class="add-btn">+ Add user</button>
+
+    <button (click)="openAddUserModal()" class="add-btn btn btn-light mt-2">+ Add user</button>
   </div>
 </aside>
+
+<p-dialog
+  [(visible)]="showAddUserModal"
+  [modal]="true"
+  [style]="{ width: '400px', height: '500px' }"
+  header="Add User to #{{ chat.activeChannel()?.name }}"
+>
+  <p-select
+    [(ngModel)]="selectedUserId"
+    [options]="availableUsers()"
+    [style]="{ width: '100%' }"
+    optionLabel="username"
+    optionValue="id"
+    placeholder="Select a user"
+  >
+  </p-select>
+
+  <ng-template pTemplate="footer">
+    <button (click)="closeModals()" class="p-button-text" pButton>Cancel</button>
+    <button (click)="addUserToChannel()" pButton>Add User</button>
+  </ng-template>
+</p-dialog>

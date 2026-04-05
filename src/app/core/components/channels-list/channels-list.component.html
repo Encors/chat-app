@@ -1,16 +1,33 @@
-<aside class="channels-sidebar">
+<aside class="p-3">
   <section>
-    <div class="section-header">
-      <h3>CHANNELS</h3>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="m-0">CHANNELS</h5>
     </div>
 
-    <div class="channels-list">
+    <div class="d-flex flex-column gap-2">
       @for (channel of chat.userChannels(); track channel.id) {
-        <button class="channel-item" (click)="selectChannel(channel.id)">
+        <button (click)="selectChannel(channel.id)" class="channel-item d-flex align-items-center">
           <span>#{{ channel.name }}</span>
         </button>
       }
-      <button class="add-btn">+ Add channel</button>
+
+      <button (click)="openAddChannelModal()" class="add-btn btn btn-light">+ Add channel</button>
     </div>
   </section>
 </aside>
+
+<p-dialog [(visible)]="showAddChannelModal" [modal]="true" [style]="{ width: '400px' }" header="Create New Channel">
+  <input
+    (keyup.enter)="createChannel()"
+    [(ngModel)]="newChannelName"
+    pInputText
+    placeholder="Channel name"
+    style="width: 100%"
+    type="text"
+  />
+
+  <ng-template pTemplate="footer">
+    <button (click)="closeModals()" class="p-button-text" label="Cancel" pButton></button>
+    <button (click)="createChannel()" label="Create" pButton></button>
+  </ng-template>
+</p-dialog>

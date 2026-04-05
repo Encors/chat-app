@@ -1,24 +1,25 @@
 <main class="chat-area">
-  <aside class="sidebar">
-    <app-header [currentUserId]="chatService.currentUserId()" />
-    <app-channels-list />
+  <aside class="sidebar d-flex flex-column h-100 border-end">
+    <app-header [currentUserId]="chatService.currentUserId()" class="flex-shrink-0" />
+
+    <app-channels-list class="flex-shrink-0" />
 
     @if (chatService.activeChannel()) {
-      <app-users-list />
+      <app-users-list class="flex-grow-1 overflow-hidden" />
     }
   </aside>
 
   @if (chatService.activeChannel(); as channel) {
-    <section class="chat-content">
-      <div class="chat-header">
-        <h2>#{{ channel.name }}</h2>
+    <section class="chat-content d-flex flex-column h-100">
+      <div class="chat-header border-bottom">
+        <h2 class="m-0">#{{ channel.name }}</h2>
       </div>
 
-      <app-messages-list />
-      <app-message-input />
+      <app-messages-list class="flex-grow-1 overflow-hidden" />
+      <app-message-input class="flex-shrink-0" />
     </section>
   } @else {
-    <section class="no-channel-selected">
+    <section class="d-flex flex-column justify-content-center align-items-center text-center">
       <h3>Select a channel to start chatting</h3>
     </section>
   }

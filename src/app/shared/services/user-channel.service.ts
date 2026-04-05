@@ -1,43 +1,43 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { ApiService } from '@app/shared/services/api.service';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { UserChannel } from '@app/core/models/user-channel';
-import { Channel } from '@app/core/models/channel';
 import { SafeUser, UUID } from '@app/core/models/user';
+import { Observable, tap } from 'rxjs';
+import { ApiService } from './api.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserChannelService {
   private apiService = inject(ApiService);
-
   private userChannelsRelations = signal<UserChannel[]>([]);
+  readonly userChannels = computed(() => this.userChannelsRelations());
 
-  getUserChannels(allChannels: Channel[], currentUserId: UUID): Channel[] {
-    if (!currentUserId) return [];
-
-    const relations = this.userChannelsRelations();
-    const userChannelIds = relations.filter(uc => uc.user_id === currentUserId).map(uc => uc.channel_id);
-
-    return allChannels.filter(channel => userChannelIds.includes(channel.id));
-  }
-
-  loadUserChannels() {
-    this.apiService.getUserChannels().subscribe({
-      next: relations => {
-        this.userChannelsRelations.set(relations);
-      },
-    });
+  loadUserChannels(): Observable<UserChannel[]> {
+    return this.apiService.getUserChannels().pipe(tap(relations => this.userChannelsRelations.set(relations)));
   }
 
   getChannelUsers(channelId: UUID, allUsers: Map<UUID, SafeUser>): SafeUser[] {
     const relations = this.userChannelsRelations();
+    const uniqueIds = new Set(relations.filter(uc => uc.channel_id === channelId).map(uc => uc.user_id));
 
-    const userIds = relations.filter(uc => uc.channel_id === channelId).map(uc => uc.user_id);
-
-    return userIds.map(id => allUsers.get(id)).filter((user): user is SafeUser => user !== undefined);
+    return [...uniqueIds].map(id => allUsers.get(id)).filter((user): user is SafeUser => !!user);
   }
 
-  isUserInChannel(channelId: string, currentUserId: UUID): boolean {
-    if (!currentUserId) return false;
+  isUserInChannel(channelId: string, userId: UUID): boolean {
+    if (!userId) return false;
 
-    return this.userChannelsRelations().some(uc => uc.user_id === currentUserId && uc.channel_id === channelId);
+    return this.userChannelsRelations().some(uc => uc.user_id === userId && uc.channel_id === channelId);
+  }
+
+  addUserToChannel$(userId: string, channelId: string): Observable<UserChannel> {
+    return this.apiService.addUserToChannel({ user_id: userId, channel_id: channelId }).pipe(
+      tap(userChannel => {
+        this.userChannelsRelations.update(list => {
+          const exists = list.some(
+            uc => uc.user_id === userChannel.user_id && uc.channel_id === userChannel.channel_id,
+          );
+
+          return exists ? [...list] : [...list, userChannel];
+        });
+      }),
+    );
   }
 }

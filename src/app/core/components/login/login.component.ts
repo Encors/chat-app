@@ -2,10 +2,15 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AuthService } from '@app/shared/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Card } from 'primeng/card';
+import { Password } from 'primeng/password';
+import { Message } from 'primeng/message';
+import { ButtonDirective } from 'primeng/button';
+import { InputText } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, Card, Password, Message, ButtonDirective, InputText],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

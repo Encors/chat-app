@@ -9,5 +9,5 @@ import { ChatService } from '@app/shared/services/chat.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessagesListComponent {
-  protected chat = inject(ChatService);
+  chatService = inject(ChatService);
 }

@@ -1,12 +1,21 @@
-<div class="message-input-container">
-  <div class="input-wrapper">
-    <input
-      type="text"
-      [(ngModel)]="newMessage"
+<div class="border-top p-3 flex-shrink-0">
+  <div class="d-flex gap-2 align-items-end">
+    <textarea
       (keyup.enter)="sendMessage()"
+      [(ngModel)]="newMessage"
+      autoResize="true"
+      class="w-100"
+      pInputTextarea
       placeholder="Type a message..."
-      class="message-input"
-    />
-    <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim()" title="Send message">➤</button>
+      rows="1"
+    ></textarea>
+
+    <button
+      (click)="sendMessage()"
+      [disabled]="!newMessage.trim()"
+      class="p-button-secondary"
+      icon="pi pi-arrow-right"
+      pButton
+    ></button>
   </div>
 </div>
